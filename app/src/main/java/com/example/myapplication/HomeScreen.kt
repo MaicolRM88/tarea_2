@@ -10,6 +10,7 @@ import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.material3.Button
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -41,24 +42,37 @@ fun HomeScreen(viewModel: EventViewModel, navController: NavHostController) {
                 }
             }
 
-            // Cuadrícula para mostrar los eventos
+            val eventosAgrupados = viewModel.eventos.groupBy { it.categoria }
+
             LazyVerticalGrid(
-                columns = GridCells.Fixed(count = 1), // Usamos 1 columna para que las tarjetas ocupen el ancho completo
+                columns = GridCells.Fixed(count = 1),
                 modifier = Modifier.padding(top = 16.dp),
                 verticalArrangement = Arrangement.spacedBy(10.dp)
             ) {
-                // Iteramos sobre la lista de eventos del ViewModel
-                items(viewModel.eventos) { evento ->
-                    EventCard(evento = evento, onClick = {
-                        // Navegamos a la vista de detalle pasando los datos del evento
-                        navController.navigate(
-                            DetalleEvento(
-                                titulo = evento.titulo,
-                                descripcion = evento.descripcion,
-                                categoria = evento.categoria
-                            )
+                // Iteramos sobre cada grupo (Categoría -> Lista de eventos)
+                eventosAgrupados.forEach { (categoria, listaDeEventos) ->
+                    // Título de la Categoría
+                    item {
+                        Text(
+                            text = categoria,
+                            style = MaterialTheme.typography.headlineSmall,
+                            modifier = Modifier.padding(vertical = 8.dp),
+                            color = MaterialTheme.colorScheme.primary
                         )
-                    })
+                    }
+
+                    // Eventos pertenecientes a esa categoría
+                    items(listaDeEventos) { evento ->
+                        EventCard(evento = evento, onClick = {
+                            navController.navigate(
+                                DetalleEvento(
+                                    titulo = evento.titulo,
+                                    descripcion = evento.descripcion,
+                                    categoria = evento.categoria
+                                )
+                            )
+                        })
+                    }
                 }
             }
         }

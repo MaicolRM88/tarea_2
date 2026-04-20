@@ -30,12 +30,23 @@ fun Navigation() {
         composable<Home> {
             HomeScreen(viewModel = viewModel, navController = navController)
         }
+
         composable<FormCategoria> {
+            FormCategoriaScreen(viewModel = viewModel, navController = navController)
         }
+
         composable<FormEvento> {
+            FormEventoScreen(viewModel = viewModel, navController = navController)
         }
+
         composable<DetalleEvento> { backStackEntry ->
             val args = backStackEntry.toRoute<DetalleEvento>()
+            DetalleScreen(
+                titulo = args.titulo,
+                descripcion = args.descripcion,
+                categoria = args.categoria,
+                navController = navController
+            )
         }
     }
 }

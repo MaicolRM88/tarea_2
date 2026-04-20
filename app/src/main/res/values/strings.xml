@@ -1,5 +1,9 @@
 <resources>
     <string name="app_name">EventMaster</string>
+    <string name="nombre_categoria">Nombre de la Categoría</string>
+    <string name="titulo_evento">Título del Evento</string>
+    <string name="desc_evento">Descripción</string>
+    <string name="btn_guardar">Guardar</string>
     <string name="btn_crear_cat">Crear Categoría</string>
     <string name="btn_crear_evento">Crear Evento</string>
 </resources>
