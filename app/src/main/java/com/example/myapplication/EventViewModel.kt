@@ -1,6 +1,7 @@
 package com.example.myapplication
 
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
@@ -9,8 +10,9 @@ class Categoria(val nombre: String)
 class Evento(val titulo: String, val descripcion: String, val categoria: String)
 
 class EventViewModel : ViewModel() {
-    var categorias = mutableListOf<Categoria>()
-    var eventos = mutableListOf<Evento>()
+    // Usamos mutableStateListOf para que Compose detecte cuando añadimos elementos
+    var categorias = mutableStateListOf<Categoria>()
+    var eventos = mutableStateListOf<Evento>()
 
     var nombreCategoria by mutableStateOf("")
     var errorCategoria by mutableStateOf("")
@@ -42,5 +44,10 @@ class EventViewModel : ViewModel() {
             errorEvento = "Todos los campos son obligatorios"
             return false
         }
+    }
+
+    // Función para obtener eventos filtrados por categoría
+    fun getEventosPorCategoria(nombreCat: String): List<Evento> {
+        return eventos.filter { it.categoria == nombreCat }
     }
 }

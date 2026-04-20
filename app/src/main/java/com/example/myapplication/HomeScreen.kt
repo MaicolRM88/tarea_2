@@ -1,19 +1,12 @@
 package com.example.myapplication
 
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.lazy.grid.GridCells
-import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
-import androidx.compose.foundation.lazy.grid.items
-import androidx.compose.material3.Button
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
+import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
@@ -28,13 +21,12 @@ fun HomeScreen(viewModel: EventViewModel, navController: NavHostController) {
                 .fillMaxSize()
                 .padding(16.dp)
         ) {
-            // Fila superior con los botones de navegación
+            // Botones de navegación
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceEvenly
             ) {
                 Button(onClick = { navController.navigate(FormCategoria) }) {
-                    // Usamos los strings definidos en el primer paso
                     Text(stringResource(R.string.btn_crear_cat))
                 }
                 Button(onClick = { navController.navigate(FormEvento) }) {
@@ -42,27 +34,83 @@ fun HomeScreen(viewModel: EventViewModel, navController: NavHostController) {
                 }
             }
 
-            val eventosAgrupados = viewModel.eventos.groupBy { it.categoria }
+            Spacer(modifier = Modifier.height(16.dp))
 
-            LazyVerticalGrid(
-                columns = GridCells.Fixed(count = 1),
-                modifier = Modifier.padding(top = 16.dp),
-                verticalArrangement = Arrangement.spacedBy(10.dp)
+            Text(
+                text = "Categorías",
+                style = MaterialTheme.typography.headlineMedium,
+                modifier = Modifier.padding(bottom = 8.dp)
+            )
+
+            // Lista de categorías
+            LazyColumn(
+                modifier = Modifier.fillMaxSize(),
+                verticalArrangement = Arrangement.spacedBy(8.dp)
             ) {
-                // Iteramos sobre cada grupo (Categoría -> Lista de eventos)
-                eventosAgrupados.forEach { (categoria, listaDeEventos) ->
-                    // Título de la Categoría
-                    item {
-                        Text(
-                            text = categoria,
-                            style = MaterialTheme.typography.headlineSmall,
-                            modifier = Modifier.padding(vertical = 8.dp),
-                            color = MaterialTheme.colorScheme.primary
-                        )
+                items(viewModel.categorias) { categoria ->
+                    Card(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .clickable {
+                                navController.navigate(EventosCategoria(categoria.nombre))
+                            },
+                        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
+                    ) {
+                        Row(
+                            modifier = Modifier
+                                .padding(16.dp)
+                                .fillMaxWidth(),
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.SpaceBetween
+                        ) {
+                            Text(
+                                text = categoria.nombre,
+                                style = MaterialTheme.typography.titleLarge
+                            )
+                            Text(
+                                text = "Ver eventos >",
+                                style = MaterialTheme.typography.bodySmall,
+                                color = MaterialTheme.colorScheme.primary
+                            )
+                        }
                     }
+                }
+            }
+        }
+    }
+}
 
-                    // Eventos pertenecientes a esa categoría
-                    items(listaDeEventos) { evento ->
+@Composable
+fun EventosPorCategoriaScreen(
+    categoria: String,
+    viewModel: EventViewModel,
+    navController: NavHostController
+) {
+    val eventosFiltrados = viewModel.getEventosPorCategoria(categoria)
+
+    Scaffold { innerPadding ->
+        Column(
+            modifier = Modifier
+                .padding(innerPadding)
+                .fillMaxSize()
+                .padding(16.dp)
+        ) {
+            Text(
+                text = "Eventos en: $categoria",
+                style = MaterialTheme.typography.headlineMedium,
+                color = MaterialTheme.colorScheme.primary,
+                modifier = Modifier.padding(bottom = 16.dp)
+            )
+
+            if (eventosFiltrados.isEmpty()) {
+                Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                    Text("No hay eventos en esta categoría")
+                }
+            } else {
+                LazyColumn(
+                    verticalArrangement = Arrangement.spacedBy(10.dp)
+                ) {
+                    items(eventosFiltrados) { evento ->
                         EventCard(evento = evento, onClick = {
                             navController.navigate(
                                 DetalleEvento(
@@ -74,6 +122,15 @@ fun HomeScreen(viewModel: EventViewModel, navController: NavHostController) {
                         })
                     }
                 }
+            }
+
+            Spacer(modifier = Modifier.weight(1f))
+            
+            Button(
+                onClick = { navController.popBackStack() },
+                modifier = Modifier.align(Alignment.CenterHorizontally)
+            ) {
+                Text("Volver")
             }
         }
     }

@@ -17,10 +17,12 @@ object FormCategoria
 object FormEvento
 
 @Serializable
+data class EventosCategoria(val nombreCategoria: String)
+
+@Serializable
 data class DetalleEvento(val titulo: String, val descripcion: String, val categoria: String)
 
 @SuppressLint("ViewModelConstructorInComposable")
-
 @Composable
 fun Navigation() {
     val navController = rememberNavController()
@@ -37,6 +39,15 @@ fun Navigation() {
 
         composable<FormEvento> {
             FormEventoScreen(viewModel = viewModel, navController = navController)
+        }
+
+        composable<EventosCategoria> { backStackEntry ->
+            val args = backStackEntry.toRoute<EventosCategoria>()
+            EventosPorCategoriaScreen(
+                categoria = args.nombreCategoria,
+                viewModel = viewModel,
+                navController = navController
+            )
         }
 
         composable<DetalleEvento> { backStackEntry ->
