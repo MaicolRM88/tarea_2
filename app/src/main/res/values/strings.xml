@@ -1,3 +1,5 @@
 <resources>
     <string name="app_name">EventMaster</string>
+    <string name="btn_crear_cat">Crear Categoría</string>
+    <string name="btn_crear_evento">Crear Evento</string>
 </resources>

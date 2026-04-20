@@ -28,6 +28,7 @@ fun Navigation() {
 
     NavHost(navController = navController, startDestination = Home) {
         composable<Home> {
+            HomeScreen(viewModel = viewModel, navController = navController)
         }
         composable<FormCategoria> {
         }
