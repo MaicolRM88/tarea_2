@@ -3,7 +3,7 @@ package com.example.myapplication
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowForward
+import androidx.compose.material.icons.automirrored.filled.ArrowForward
 import androidx.compose.material.icons.filled.CalendarMonth
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
@@ -75,9 +75,9 @@ fun EventCard(evento: Evento, onClick: () -> Unit) {
                 }
             }
 
-            // Flecha
+            // Flecha (Versión AutoMirrored corregida)
             Icon(
-                imageVector = Icons.Default.ArrowForward,
+                imageVector = Icons.AutoMirrored.Filled.ArrowForward,
                 contentDescription = "Ver detalle",
                 tint = MaterialTheme.colorScheme.primary,
                 modifier = Modifier

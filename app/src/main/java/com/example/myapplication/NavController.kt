@@ -1,4 +1,5 @@
 package com.example.myapplication
+
 import android.annotation.SuppressLint
 import androidx.compose.runtime.Composable
 import androidx.navigation.compose.NavHost
@@ -7,6 +8,7 @@ import androidx.navigation.compose.rememberNavController
 import androidx.navigation.toRoute
 import kotlinx.serialization.Serializable
 
+// Definición de rutas
 @Serializable
 object Home
 
@@ -26,9 +28,13 @@ data class DetalleEvento(val titulo: String, val descripcion: String, val catego
 @Composable
 fun Navigation() {
     val navController = rememberNavController()
+    // Es recomendable obtener el ViewModel de forma que sobreviva a la recreación
     val viewModel = EventViewModel()
 
-    NavHost(navController = navController, startDestination = Home) {
+    NavHost(
+        navController = navController, 
+        startDestination = Home
+    ) {
         composable<Home> {
             HomeScreen(viewModel = viewModel, navController = navController)
         }

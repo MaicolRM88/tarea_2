@@ -3,9 +3,9 @@ package com.example.myapplication
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.automirrored.filled.List
 import androidx.compose.material.icons.filled.CalendarMonth
-import androidx.compose.material.icons.filled.List
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -41,7 +41,8 @@ private fun FormScaffold(
                 },
                 navigationIcon = {
                     IconButton(onClick = { navController.popBackStack() }) {
-                        Icon(Icons.Default.ArrowBack, contentDescription = "Volver", tint = MaterialTheme.colorScheme.primary)
+                        // Cambio: Icons.AutoMirrored.Filled.ArrowBack
+                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Volver", tint = MaterialTheme.colorScheme.primary)
                     }
                 },
                 colors = TopAppBarDefaults.topAppBarColors(containerColor = MaterialTheme.colorScheme.surface)
@@ -107,7 +108,8 @@ fun FormCategoriaScreen(viewModel: EventViewModel, navController: NavHostControl
     FormScaffold(
         titulo = "Nueva categoría",
         subtitulo = "Organiza tus eventos",
-        icono = Icons.Default.List,
+        // Cambio: Icons.AutoMirrored.Filled.List
+        icono = Icons.AutoMirrored.Filled.List,
         iconoColor = MaterialTheme.colorScheme.primaryContainer,
         iconoColorContenido = MaterialTheme.colorScheme.onPrimaryContainer,
         navController = navController
@@ -159,7 +161,8 @@ fun FormEventoScreen(viewModel: EventViewModel, navController: NavHostController
                 readOnly = true,
                 label = { Text("Seleccionar categoría") },
                 trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded) },
-                modifier = Modifier.menuAnchor().fillMaxWidth(),
+                // Cambio: Uso de menuAnchor con MenuAnchorType.PrimaryNotEditable
+                modifier = Modifier.menuAnchor(MenuAnchorType.PrimaryNotEditable).fillMaxWidth(),
                 shape = RoundedCornerShape(14.dp),
                 colors = OutlinedTextFieldDefaults.colors(
                     focusedBorderColor = MaterialTheme.colorScheme.primary,

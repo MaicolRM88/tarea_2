@@ -1,32 +1,23 @@
 package com.example.myapplication
 
-import androidx.compose.animation.*
-import androidx.compose.animation.core.*
-import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.filled.FolderOpen
-import androidx.compose.material.icons.filled.ArrowForwardIos
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.automirrored.filled.ArrowForwardIos
 import androidx.compose.material.icons.filled.CalendarMonth
+import androidx.compose.material.icons.filled.FolderOpen
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Brush
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
-import androidx.compose.material.icons.filled.ArrowBack
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -58,12 +49,10 @@ fun HomeScreen(viewModel: EventViewModel, navController: NavHostController) {
             contentPadding = PaddingValues(horizontal = 16.dp, vertical = 12.dp),
             verticalArrangement = Arrangement.spacedBy(12.dp)
         ) {
-            // Banner de acciones rápidas
             item {
                 AccionesRapidasCard(navController = navController)
             }
 
-            // Encabezado de sección
             item {
                 Row(
                     modifier = Modifier
@@ -92,7 +81,6 @@ fun HomeScreen(viewModel: EventViewModel, navController: NavHostController) {
                     }
                 }
             }
-            // Lista de categorías o estado vacío
             if (viewModel.categorias.isEmpty()) {
                 item {
                     EstadoVacioCard()
@@ -101,6 +89,7 @@ fun HomeScreen(viewModel: EventViewModel, navController: NavHostController) {
                 items(viewModel.categorias) { categoria ->
                     CategoriaCard(
                         nombre = categoria.nombre,
+                        // Corregido: Nombres sin el prefijo "Route"
                         onClick = { navController.navigate(EventosCategoria(categoria.nombre)) }
                     )
                 }
@@ -135,12 +124,14 @@ fun AccionesRapidasCard(navController: NavHostController) {
                     texto = "Nueva categoría",
                     icono = Icons.Default.FolderOpen,
                     modifier = Modifier.weight(1f),
+                    // Corregido: Nombres sin el prefijo "Route"
                     onClick = { navController.navigate(FormCategoria) }
                 )
                 AccionBoton(
                     texto = "Nuevo evento",
                     icono = Icons.Default.CalendarMonth,
                     modifier = Modifier.weight(1f),
+                    // Corregido: Nombres sin el prefijo "Route"
                     onClick = { navController.navigate(FormEvento) }
                 )
             }
@@ -201,7 +192,6 @@ fun CategoriaCard(nombre: String, onClick: () -> Unit) {
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.spacedBy(14.dp)
             ) {
-                // Ícono decorativo de categoría
                 Surface(
                     shape = RoundedCornerShape(10.dp),
                     color = MaterialTheme.colorScheme.tertiaryContainer,
@@ -233,7 +223,7 @@ fun CategoriaCard(nombre: String, onClick: () -> Unit) {
             }
 
             Icon(
-                imageVector = Icons.Default.ArrowForwardIos,
+                imageVector = Icons.AutoMirrored.Filled.ArrowForwardIos,
                 contentDescription = "Ver eventos",
                 tint = MaterialTheme.colorScheme.primary,
                 modifier = Modifier.size(20.dp)
@@ -292,10 +282,6 @@ fun EstadoVacioCard() {
     }
 }
 
-// ───────────────────────────────────────────────
-// EventosPorCategoriaScreen
-// ───────────────────────────────────────────────
-
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun EventosPorCategoriaScreen(
@@ -326,7 +312,7 @@ fun EventosPorCategoriaScreen(
                 navigationIcon = {
                     IconButton(onClick = { navController.popBackStack() }) {
                         Icon(
-                            imageVector = Icons.Default.ArrowBack,
+                            imageVector = Icons.AutoMirrored.Filled.ArrowBack,
                             contentDescription = "Volver",
                             tint = MaterialTheme.colorScheme.primary
                         )
@@ -359,6 +345,7 @@ fun EventosPorCategoriaScreen(
             ) {
                 items(eventosFiltrados) { evento ->
                     EventCard(evento = evento, onClick = {
+                        // Corregido: Nombres sin el prefijo "Route"
                         navController.navigate(
                             DetalleEvento(
                                 titulo = evento.titulo,
