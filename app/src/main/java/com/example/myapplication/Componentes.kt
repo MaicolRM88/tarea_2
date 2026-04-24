@@ -32,7 +32,6 @@ fun EventCard(evento: Evento, onClick: () -> Unit) {
                 .fillMaxWidth(),
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
-            // Ícono decorativo
             Surface(
                 shape = RoundedCornerShape(12.dp),
                 color = MaterialTheme.colorScheme.primaryContainer,
@@ -50,7 +49,6 @@ fun EventCard(evento: Evento, onClick: () -> Unit) {
 
             Spacer(modifier = Modifier.width(14.dp))
 
-            // Texto
             Column(modifier = Modifier.weight(1f)) {
                 Text(
                     text = evento.titulo,
@@ -75,7 +73,6 @@ fun EventCard(evento: Evento, onClick: () -> Unit) {
                 }
             }
 
-            // Flecha (Versión AutoMirrored corregida)
             Icon(
                 imageVector = Icons.AutoMirrored.Filled.ArrowForward,
                 contentDescription = "Ver detalle",

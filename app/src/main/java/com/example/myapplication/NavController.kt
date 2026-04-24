@@ -8,7 +8,6 @@ import androidx.navigation.compose.rememberNavController
 import androidx.navigation.toRoute
 import kotlinx.serialization.Serializable
 
-// Definición de rutas
 @Serializable
 object Home
 
@@ -28,7 +27,6 @@ data class DetalleEvento(val titulo: String, val descripcion: String, val catego
 @Composable
 fun Navigation() {
     val navController = rememberNavController()
-    // Es recomendable obtener el ViewModel de forma que sobreviva a la recreación
     val viewModel = EventViewModel()
 
     NavHost(

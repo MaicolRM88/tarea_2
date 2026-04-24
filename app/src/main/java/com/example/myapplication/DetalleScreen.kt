@@ -9,9 +9,14 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
+import com.example.myapplication.ui.theme.AzulClaroFondo
+import com.example.myapplication.ui.theme.AzulOscuroBotones
+import com.example.myapplication.ui.theme.FondoApp
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -19,21 +24,20 @@ fun DetalleScreen(titulo: String, descripcion: String, categoria: String, navCon
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { },
+                title = { Text("Detalle", fontWeight = FontWeight.Bold, color = Color(0xFF2D3243)) },
                 navigationIcon = {
                     IconButton(onClick = { navController.popBackStack() }) {
-                        // Cambio: Se usa la versión AutoMirrored para evitar el warning
                         Icon(
                             imageVector = Icons.AutoMirrored.Filled.ArrowBack, 
                             contentDescription = "Volver", 
-                            tint = MaterialTheme.colorScheme.primary
+                            tint = AzulOscuroBotones
                         )
                     }
                 },
-                colors = TopAppBarDefaults.topAppBarColors(containerColor = MaterialTheme.colorScheme.surface)
+                colors = TopAppBarDefaults.topAppBarColors(containerColor = FondoApp)
             )
         },
-        containerColor = MaterialTheme.colorScheme.background
+        containerColor = FondoApp
     ) { innerPadding ->
         Column(
             modifier = Modifier
@@ -41,54 +45,58 @@ fun DetalleScreen(titulo: String, descripcion: String, categoria: String, navCon
                 .fillMaxSize()
                 .padding(24.dp)
         ) {
-            // Ícono decorativo + badge de categoría
-            Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-                Surface(shape = RoundedCornerShape(14.dp), color = MaterialTheme.colorScheme.primaryContainer, modifier = Modifier.size(52.dp)) {
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Surface(
+                    shape = RoundedCornerShape(16.dp), 
+                    color = AzulClaroFondo, 
+                    modifier = Modifier.size(56.dp)
+                ) {
                     Box(contentAlignment = Alignment.Center) {
-                        Icon(Icons.Default.CalendarMonth, contentDescription = null, tint = MaterialTheme.colorScheme.onPrimaryContainer, modifier = Modifier.size(26.dp))
+                        Icon(Icons.Default.CalendarMonth, contentDescription = null, tint = AzulOscuroBotones, modifier = Modifier.size(28.dp))
                     }
                 }
-                Surface(shape = RoundedCornerShape(50), color = MaterialTheme.colorScheme.secondaryContainer) {
+                Spacer(Modifier.width(16.dp))
+                Column {
                     Text(
                         text = categoria,
-                        style = MaterialTheme.typography.labelMedium,
-                        fontWeight = FontWeight.SemiBold,
-                        color = MaterialTheme.colorScheme.onSecondaryContainer,
-                        modifier = Modifier.padding(horizontal = 12.dp, vertical = 4.dp)
+                        style = MaterialTheme.typography.labelLarge,
+                        fontWeight = FontWeight.Bold,
+                        color = AzulOscuroBotones
                     )
+                    Text("Categoría del evento", style = MaterialTheme.typography.bodySmall, color = Color.Gray)
                 }
             }
 
-            Spacer(Modifier.height(20.dp))
+            Spacer(Modifier.height(32.dp))
 
-            // Título
-            Text(titulo, style = MaterialTheme.typography.headlineMedium, fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.onBackground)
-
-            Spacer(Modifier.height(16.dp))
-
-            // Divider
-            HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant)
-
-            Spacer(Modifier.height(16.dp))
-
-            // Descripción
             Text(
-                text = "Descripción",
-                style = MaterialTheme.typography.labelLarge,
-                fontWeight = FontWeight.SemiBold,
-                color = MaterialTheme.colorScheme.onSurfaceVariant
+                text = titulo, 
+                style = MaterialTheme.typography.headlineMedium, 
+                fontWeight = FontWeight.Black, 
+                color = Color(0xFF2D3243)
             )
-            Spacer(Modifier.height(8.dp))
+
+            Spacer(Modifier.height(24.dp))
+
+            Text(
+                text = "ACERCA DEL EVENTO",
+                style = MaterialTheme.typography.labelSmall,
+                fontWeight = FontWeight.Bold,
+                color = Color.Gray,
+                modifier = Modifier.padding(start = 4.dp, bottom = 8.dp)
+            )
             Card(
-                shape = RoundedCornerShape(14.dp),
-                colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant),
-                elevation = CardDefaults.cardElevation(0.dp)
+                modifier = Modifier.fillMaxWidth(),
+                shape = RoundedCornerShape(24.dp),
+                colors = CardDefaults.cardColors(containerColor = Color.White),
+                elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
             ) {
                 Text(
                     text = descripcion,
                     style = MaterialTheme.typography.bodyLarge,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant,
-                    modifier = Modifier.padding(16.dp)
+                    color = Color(0xFF4A4A4A),
+                    modifier = Modifier.padding(24.dp),
+                    lineHeight = 24.sp
                 )
             }
         }

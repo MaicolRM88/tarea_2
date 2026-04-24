@@ -14,10 +14,15 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
+import com.example.myapplication.ui.theme.AzulClaroFondo
+import com.example.myapplication.ui.theme.AzulOscuroBotones
+import com.example.myapplication.ui.theme.AzulIconoFondo
+import com.example.myapplication.ui.theme.FondoApp
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -26,70 +31,100 @@ fun HomeScreen(viewModel: EventViewModel, navController: NavHostController) {
         topBar = {
             TopAppBar(
                 title = {
-                    Column {
-                        Text(
-                            text = "Mis Eventos",
-                            style = MaterialTheme.typography.headlineSmall,
-                            fontWeight = FontWeight.Bold,
-                            color = MaterialTheme.colorScheme.onSurface
-                        )
-                    }
+                    Text(
+                        text = "Mis Eventos",
+                        style = MaterialTheme.typography.headlineMedium,
+                        fontWeight = FontWeight.Bold,
+                        color = Color(0xFF2D3243)
+                    )
                 },
-                colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = MaterialTheme.colorScheme.surface
-                )
+                colors = TopAppBarDefaults.topAppBarColors(containerColor = FondoApp)
             )
         },
-        containerColor = MaterialTheme.colorScheme.background
+        containerColor = FondoApp
     ) { innerPadding ->
         LazyColumn(
             modifier = Modifier
                 .padding(innerPadding)
                 .fillMaxSize(),
-            contentPadding = PaddingValues(horizontal = 16.dp, vertical = 12.dp),
-            verticalArrangement = Arrangement.spacedBy(12.dp)
+            contentPadding = PaddingValues(20.dp),
+            verticalArrangement = Arrangement.spacedBy(20.dp)
         ) {
             item {
-                AccionesRapidasCard(navController = navController)
+                Card(
+                    modifier = Modifier.fillMaxWidth(),
+                    shape = RoundedCornerShape(28.dp),
+                    colors = CardDefaults.cardColors(containerColor = AzulClaroFondo)
+                ) {
+                    Column(modifier = Modifier.padding(24.dp)) {
+                        Text(
+                            "Acciones rápidas", 
+                            style = MaterialTheme.typography.bodyLarge,
+                            color = Color(0xFF4A5982).copy(alpha = 0.8f)
+                        )
+                        Spacer(Modifier.height(16.dp))
+                        Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+                            AccionBotonEstilo(
+                                texto = "Nueva categoría",
+                                icono = Icons.Default.FolderOpen,
+                                modifier = Modifier.weight(1f),
+                                onClick = { navController.navigate(FormCategoria) }
+                            )
+                            AccionBotonEstilo(
+                                texto = "Nuevo evento",
+                                icono = Icons.Default.CalendarMonth,
+                                modifier = Modifier.weight(1f),
+                                enabled = viewModel.categorias.isNotEmpty(),
+                                onClick = { navController.navigate(FormEvento) }
+                            )
+                        }
+
+                        if (viewModel.categorias.isEmpty()) {
+                            Spacer(Modifier.height(12.dp))
+                            Text(
+                                "Crea una categoría para habilitar nuevos eventos",
+                                style = MaterialTheme.typography.bodySmall,
+                                color = Color(0xFFF44336),
+                                fontWeight = FontWeight.Medium
+                            )
+                        }
+                    }
+                }
             }
 
             item {
                 Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(vertical = 4.dp),
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.SpaceBetween
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
                 ) {
                     Text(
-                        text = "Categorías",
-                        style = MaterialTheme.typography.titleMedium,
-                        fontWeight = FontWeight.SemiBold,
-                        color = MaterialTheme.colorScheme.onBackground
+                        "Categorías", 
+                        style = MaterialTheme.typography.titleLarge, 
+                        fontWeight = FontWeight.Bold,
+                        color = Color(0xFF2D3243)
                     )
                     Surface(
                         shape = RoundedCornerShape(50),
-                        color = MaterialTheme.colorScheme.secondaryContainer
+                        color = Color(0xFFE0E6F9)
                     ) {
                         Text(
-                            text = "${viewModel.categorias.size}",
-                            modifier = Modifier.padding(horizontal = 10.dp, vertical = 2.dp),
-                            style = MaterialTheme.typography.labelMedium,
-                            color = MaterialTheme.colorScheme.onSecondaryContainer,
-                            fontWeight = FontWeight.Bold
+                            "${viewModel.categorias.size}",
+                            modifier = Modifier.padding(horizontal = 12.dp, vertical = 4.dp),
+                            style = MaterialTheme.typography.labelLarge,
+                            fontWeight = FontWeight.Bold,
+                            color = AzulOscuroBotones
                         )
                     }
                 }
             }
+
             if (viewModel.categorias.isEmpty()) {
-                item {
-                    EstadoVacioCard()
-                }
+                item { EstadoVacioEstilo() }
             } else {
                 items(viewModel.categorias) { categoria ->
-                    CategoriaCard(
+                    CategoriaCardEstilo(
                         nombre = categoria.nombre,
-                        // Corregido: Nombres sin el prefijo "Route"
                         onClick = { navController.navigate(EventosCategoria(categoria.nombre)) }
                     )
                 }
@@ -99,184 +134,90 @@ fun HomeScreen(viewModel: EventViewModel, navController: NavHostController) {
 }
 
 @Composable
-fun AccionesRapidasCard(navController: NavHostController) {
-    Card(
-        modifier = Modifier.fillMaxWidth(),
-        shape = RoundedCornerShape(20.dp),
-        colors = CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.primaryContainer
-        ),
-        elevation = CardDefaults.cardElevation(defaultElevation = 0.dp)
-    ) {
-        Column(modifier = Modifier.padding(20.dp)) {
-            Text(
-                text = "Acciones rápidas",
-                style = MaterialTheme.typography.labelLarge,
-                color = MaterialTheme.colorScheme.onPrimaryContainer.copy(alpha = 0.7f),
-                fontWeight = FontWeight.Medium
-            )
-            Spacer(modifier = Modifier.height(12.dp))
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.spacedBy(10.dp)
-            ) {
-                AccionBoton(
-                    texto = "Nueva categoría",
-                    icono = Icons.Default.FolderOpen,
-                    modifier = Modifier.weight(1f),
-                    // Corregido: Nombres sin el prefijo "Route"
-                    onClick = { navController.navigate(FormCategoria) }
-                )
-                AccionBoton(
-                    texto = "Nuevo evento",
-                    icono = Icons.Default.CalendarMonth,
-                    modifier = Modifier.weight(1f),
-                    // Corregido: Nombres sin el prefijo "Route"
-                    onClick = { navController.navigate(FormEvento) }
-                )
-            }
-        }
-    }
-}
-
-@Composable
-fun AccionBoton(
-    texto: String,
-    icono: ImageVector,
-    modifier: Modifier = Modifier,
+fun AccionBotonEstilo(
+    texto: String, 
+    icono: ImageVector, 
+    modifier: Modifier = Modifier, 
+    enabled: Boolean = true,
     onClick: () -> Unit
 ) {
-    FilledTonalButton(
+    Button(
         onClick = onClick,
-        modifier = modifier.height(52.dp),
-        shape = RoundedCornerShape(14.dp),
-        colors = ButtonDefaults.filledTonalButtonColors(
-            containerColor = MaterialTheme.colorScheme.primary,
-            contentColor = MaterialTheme.colorScheme.onPrimary
+        modifier = modifier.height(56.dp),
+        enabled = enabled,
+        shape = RoundedCornerShape(16.dp),
+        colors = ButtonDefaults.buttonColors(
+            containerColor = AzulOscuroBotones,
+            disabledContainerColor = AzulOscuroBotones.copy(alpha = 0.5f)
         )
     ) {
-        Icon(
-            imageVector = icono,
-            contentDescription = null,
-            modifier = Modifier.size(16.dp)
-        )
-        Spacer(modifier = Modifier.width(6.dp))
-        Text(
-            text = texto,
-            style = MaterialTheme.typography.labelMedium,
-            fontWeight = FontWeight.SemiBold
-        )
+        Icon(icono, contentDescription = null, modifier = Modifier.size(20.dp), tint = Color.White)
+        Spacer(Modifier.width(8.dp))
+        Text(texto, style = MaterialTheme.typography.labelLarge, color = Color.White)
     }
 }
 
 @Composable
-fun CategoriaCard(nombre: String, onClick: () -> Unit) {
+fun CategoriaCardEstilo(nombre: String, onClick: () -> Unit) {
     Card(
-        modifier = Modifier
-            .fillMaxWidth()
-            .clickable { onClick() },
-        shape = RoundedCornerShape(16.dp),
-        colors = CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.surface
-        ),
-        elevation = CardDefaults.cardElevation(defaultElevation = 1.dp)
+        modifier = Modifier.fillMaxWidth().clickable { onClick() },
+        shape = RoundedCornerShape(24.dp),
+        colors = CardDefaults.cardColors(containerColor = Color.White),
+        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
     ) {
         Row(
-            modifier = Modifier
-                .padding(horizontal = 20.dp, vertical = 16.dp)
-                .fillMaxWidth(),
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.SpaceBetween
+            modifier = Modifier.padding(20.dp).fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically
         ) {
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.spacedBy(14.dp)
-            ) {
+            Row(verticalAlignment = Alignment.CenterVertically) {
                 Surface(
-                    shape = RoundedCornerShape(10.dp),
-                    color = MaterialTheme.colorScheme.tertiaryContainer,
-                    modifier = Modifier.size(42.dp)
+                    shape = RoundedCornerShape(12.dp),
+                    color = AzulIconoFondo,
+                    modifier = Modifier.size(44.dp)
                 ) {
                     Box(contentAlignment = Alignment.Center) {
-                        Icon(
-                            imageVector = Icons.Default.FolderOpen,
-                            contentDescription = null,
-                            tint = MaterialTheme.colorScheme.onTertiaryContainer,
-                            modifier = Modifier.size(20.dp)
-                        )
+                        Icon(Icons.Default.FolderOpen, contentDescription = null, tint = AzulOscuroBotones)
                     }
                 }
-
-                Column {
-                    Text(
-                        text = nombre,
-                        style = MaterialTheme.typography.titleMedium,
-                        fontWeight = FontWeight.SemiBold,
-                        color = MaterialTheme.colorScheme.onSurface
-                    )
-                    Text(
-                        text = "Ver eventos",
-                        style = MaterialTheme.typography.bodySmall,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant
-                    )
-                }
+                Spacer(Modifier.width(16.dp))
+                Text(nombre, style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold)
             }
-
-            Icon(
-                imageVector = Icons.AutoMirrored.Filled.ArrowForwardIos,
-                contentDescription = "Ver eventos",
-                tint = MaterialTheme.colorScheme.primary,
-                modifier = Modifier.size(20.dp)
-            )
+            Icon(Icons.AutoMirrored.Filled.ArrowForwardIos, contentDescription = null, modifier = Modifier.size(16.dp), tint = AzulOscuroBotones)
         }
     }
 }
 
 @Composable
-fun EstadoVacioCard() {
+fun EstadoVacioEstilo() {
     Card(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(vertical = 24.dp),
-        shape = RoundedCornerShape(20.dp),
-        colors = CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.surfaceVariant
-        ),
-        elevation = CardDefaults.cardElevation(0.dp)
+        modifier = Modifier.fillMaxWidth().height(280.dp),
+        shape = RoundedCornerShape(32.dp),
+        colors = CardDefaults.cardColors(containerColor = AzulClaroFondo.copy(alpha = 0.4f))
     ) {
         Column(
-            modifier = Modifier
-                .padding(32.dp)
-                .fillMaxWidth(),
+            modifier = Modifier.fillMaxSize(),
             horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.spacedBy(8.dp)
+            verticalArrangement = Arrangement.Center
         ) {
             Surface(
-                shape = RoundedCornerShape(16.dp),
-                color = MaterialTheme.colorScheme.primaryContainer,
-                modifier = Modifier.size(64.dp)
+                shape = RoundedCornerShape(20.dp),
+                color = AzulIconoFondo,
+                modifier = Modifier.size(80.dp)
             ) {
                 Box(contentAlignment = Alignment.Center) {
-                    Icon(
-                        imageVector = Icons.Default.FolderOpen,
-                        contentDescription = null,
-                        tint = MaterialTheme.colorScheme.onPrimaryContainer,
-                        modifier = Modifier.size(32.dp)
-                    )
+                    Icon(Icons.Default.FolderOpen, contentDescription = null, modifier = Modifier.size(40.dp), tint = AzulOscuroBotones)
                 }
             }
-            Spacer(modifier = Modifier.height(4.dp))
+            Spacer(Modifier.height(24.dp))
+            Text("Sin categorías aún", style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.Bold)
+            Spacer(Modifier.height(8.dp))
             Text(
-                text = "Sin categorias aún",
-                style = MaterialTheme.typography.titleMedium,
-                fontWeight = FontWeight.SemiBold,
-                color = MaterialTheme.colorScheme.onSurfaceVariant
-            )
-            Text(
-                text = "Crea tu primera categoría para organizar tus eventos",
-                style = MaterialTheme.typography.bodySmall,
-                color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.7f),
-                textAlign = androidx.compose.ui.text.style.TextAlign.Center
+                "Crea tu primera categoría para organizar tus eventos",
+                textAlign = androidx.compose.ui.text.style.TextAlign.Center,
+                modifier = Modifier.padding(horizontal = 40.dp),
+                color = Color.Gray,
+                style = MaterialTheme.typography.bodyMedium
             )
         }
     }
@@ -284,77 +225,27 @@ fun EstadoVacioCard() {
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun EventosPorCategoriaScreen(
-    categoria: String,
-    viewModel: EventViewModel,
-    navController: NavHostController
-) {
+fun EventosPorCategoriaScreen(categoria: String, viewModel: EventViewModel, navController: NavHostController) {
     val eventosFiltrados = viewModel.getEventosPorCategoria(categoria)
-
     Scaffold(
         topBar = {
             TopAppBar(
-                title = {
-                    Column {
-                        Text(
-                            text = categoria,
-                            style = MaterialTheme.typography.headlineSmall,
-                            fontWeight = FontWeight.Bold,
-                            color = MaterialTheme.colorScheme.onSurface
-                        )
-                        Text(
-                            text = "${eventosFiltrados.size} eventos",
-                            style = MaterialTheme.typography.labelSmall,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant
-                        )
-                    }
-                },
+                title = { Text(categoria, fontWeight = FontWeight.Bold) },
                 navigationIcon = {
                     IconButton(onClick = { navController.popBackStack() }) {
-                        Icon(
-                            imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                            contentDescription = "Volver",
-                            tint = MaterialTheme.colorScheme.primary
-                        )
+                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Volver")
                     }
                 },
-                colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = MaterialTheme.colorScheme.surface
-                )
+                colors = TopAppBarDefaults.topAppBarColors(containerColor = FondoApp)
             )
         },
-        containerColor = MaterialTheme.colorScheme.background
+        containerColor = FondoApp
     ) { innerPadding ->
-        if (eventosFiltrados.isEmpty()) {
-            Box(
-                modifier = Modifier
-                    .padding(innerPadding)
-                    .fillMaxSize()
-                    .padding(24.dp),
-                contentAlignment = Alignment.Center
-            ) {
-                EstadoVacioCard()
-            }
-        } else {
-            LazyColumn(
-                modifier = Modifier
-                    .padding(innerPadding)
-                    .fillMaxSize(),
-                contentPadding = PaddingValues(horizontal = 16.dp, vertical = 12.dp),
-                verticalArrangement = Arrangement.spacedBy(10.dp)
-            ) {
-                items(eventosFiltrados) { evento ->
-                    EventCard(evento = evento, onClick = {
-                        // Corregido: Nombres sin el prefijo "Route"
-                        navController.navigate(
-                            DetalleEvento(
-                                titulo = evento.titulo,
-                                descripcion = evento.descripcion,
-                                categoria = evento.categoria
-                            )
-                        )
-                    })
-                }
+        LazyColumn(modifier = Modifier.padding(innerPadding).fillMaxSize(), contentPadding = PaddingValues(20.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
+            items(eventosFiltrados) { evento ->
+                EventCard(evento = evento, onClick = {
+                    navController.navigate(DetalleEvento(evento.titulo, evento.descripcion, evento.categoria))
+                })
             }
         }
     }
