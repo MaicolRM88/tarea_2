@@ -1,53 +1,133 @@
 package com.example.myapplication
 
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowDropDown
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.automirrored.filled.List
+import androidx.compose.material.icons.filled.CalendarMonth
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
-import com.example.myapplication.R
+
+// ─── Componentes reutilizables ───────────────────────────
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+private fun FormScaffold(
+    titulo: String,
+    subtitulo: String,
+    icono: ImageVector,
+    iconoColor: Color,
+    iconoColorContenido: Color,
+    navController: NavHostController,
+    content: @Composable ColumnScope.() -> Unit
+) {
+    Scaffold(
+        topBar = {
+            TopAppBar(
+                title = {
+                    Column {
+                        Text(titulo, style = MaterialTheme.typography.headlineSmall, fontWeight = FontWeight.Bold)
+                        Text(subtitulo, style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                    }
+                },
+                navigationIcon = {
+                    IconButton(onClick = { navController.popBackStack() }) {
+                        // Cambio: Icons.AutoMirrored.Filled.ArrowBack
+                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Volver", tint = MaterialTheme.colorScheme.primary)
+                    }
+                },
+                colors = TopAppBarDefaults.topAppBarColors(containerColor = MaterialTheme.colorScheme.surface)
+            )
+        },
+        containerColor = MaterialTheme.colorScheme.background
+    ) { innerPadding ->
+        Column(
+            modifier = Modifier.padding(innerPadding).fillMaxSize().padding(24.dp)
+        ) {
+            Spacer(Modifier.height(12.dp))
+            Surface(shape = RoundedCornerShape(16.dp), color = iconoColor, modifier = Modifier.size(56.dp)) {
+                Box(contentAlignment = Alignment.Center) {
+                    Icon(icono, contentDescription = null, tint = iconoColorContenido, modifier = Modifier.size(28.dp))
+                }
+            }
+            Spacer(Modifier.height(24.dp))
+            content()
+        }
+    }
+}
+
+@Composable
+private fun CampoTexto(
+    label: String,
+    value: String,
+    onChange: (String) -> Unit,
+    modifier: Modifier = Modifier,
+    singleLine: Boolean = true
+) {
+    Text(label, style = MaterialTheme.typography.labelLarge, fontWeight = FontWeight.SemiBold)
+    Spacer(Modifier.height(8.dp))
+    OutlinedTextField(
+        value = value,
+        onValueChange = onChange,
+        modifier = modifier.fillMaxWidth(),
+        shape = RoundedCornerShape(14.dp),
+        singleLine = singleLine,
+        colors = OutlinedTextFieldDefaults.colors(
+            focusedBorderColor = MaterialTheme.colorScheme.primary,
+            unfocusedBorderColor = MaterialTheme.colorScheme.outlineVariant,
+            focusedLabelColor = MaterialTheme.colorScheme.primary
+        )
+    )
+}
+
+@Composable
+private fun ColumnScope.BotonesFormulario(onGuardar: () -> Unit, onCancelar: () -> Unit, textoGuardar: String) {
+    Spacer(Modifier.weight(1f))
+    Button(onClick = onGuardar, modifier = Modifier.fillMaxWidth().height(52.dp), shape = RoundedCornerShape(14.dp)) {
+        Text(textoGuardar, style = MaterialTheme.typography.titleSmall, fontWeight = FontWeight.Bold)
+    }
+    Spacer(Modifier.height(8.dp))
+    OutlinedButton(onClick = onCancelar, modifier = Modifier.fillMaxWidth().height(52.dp), shape = RoundedCornerShape(14.dp)) {
+        Text("Cancelar", style = MaterialTheme.typography.titleSmall)
+    }
+}
+
+// ─── Pantallas ────────────────────────────────────────────
 
 @Composable
 fun FormCategoriaScreen(viewModel: EventViewModel, navController: NavHostController) {
-    Scaffold { innerPadding ->
-        Column(
-            modifier = Modifier
-                .padding(innerPadding)
-                .fillMaxSize()
-                .padding(16.dp),
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.Center
-        ) {
-            TextField(
-                value = viewModel.nombreCategoria,
-                onValueChange = { viewModel.nombreCategoria = it },
-                label = { Text(stringResource(R.string.nombre_categoria)) }
-            )
-
-            if (viewModel.errorCategoria.isNotEmpty()) {
-                Text(
-                    text = viewModel.errorCategoria,
-                    color = MaterialTheme.colorScheme.error,
-                    modifier = Modifier.padding(top = 4.dp)
-                )
-            }
-
-            Spacer(modifier = Modifier.size(22.dp))
-
-            Button(onClick = {
-                if (viewModel.addCategoria()) {
-                    navController.popBackStack()
-                }
-            }) {
-                Text(stringResource(R.string.btn_guardar))
-            }
+    FormScaffold(
+        titulo = "Nueva categoría",
+        subtitulo = "Organiza tus eventos",
+        // Cambio: Icons.AutoMirrored.Filled.List
+        icono = Icons.AutoMirrored.Filled.List,
+        iconoColor = MaterialTheme.colorScheme.primaryContainer,
+        iconoColorContenido = MaterialTheme.colorScheme.onPrimaryContainer,
+        navController = navController
+    ) {
+        CampoTexto(
+            label = stringResource(R.string.nombre_categoria),
+            value = viewModel.nombreCategoria,
+            onChange = { viewModel.nombreCategoria = it }
+        )
+        if (viewModel.errorCategoria.isNotEmpty()) {
+            Spacer(Modifier.height(4.dp))
+            Text(viewModel.errorCategoria, color = MaterialTheme.colorScheme.error, style = MaterialTheme.typography.labelSmall)
         }
+        BotonesFormulario(
+            onGuardar = { if (viewModel.addCategoria()) navController.popBackStack() },
+            onCancelar = { navController.popBackStack() },
+            textoGuardar = stringResource(R.string.btn_guardar)
+        )
     }
 }
 
@@ -55,92 +135,56 @@ fun FormCategoriaScreen(viewModel: EventViewModel, navController: NavHostControl
 @Composable
 fun FormEventoScreen(viewModel: EventViewModel, navController: NavHostController) {
     var expanded by remember { mutableStateOf(false) }
-    var categoriaSeleccionada by remember { 
-        mutableStateOf(if (viewModel.categorias.isNotEmpty()) viewModel.categorias[0].nombre else "General") 
+    var categoriaSeleccionada by remember {
+        mutableStateOf(if (viewModel.categorias.isNotEmpty()) viewModel.categorias[0].nombre else "General")
     }
 
-    Scaffold { innerPadding ->
-        Column(
-            modifier = Modifier
-                .padding(innerPadding)
-                .fillMaxSize()
-                .padding(16.dp),
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.Center
-        ) {
-            TextField(
-                value = viewModel.tituloEvento,
-                onValueChange = { viewModel.tituloEvento = it },
-                label = { Text(stringResource(R.string.titulo_evento)) }
-            )
+    FormScaffold(
+        titulo = "Nuevo evento",
+        subtitulo = "Completa los detalles",
+        icono = Icons.Default.CalendarMonth,
+        iconoColor = MaterialTheme.colorScheme.tertiaryContainer,
+        iconoColorContenido = MaterialTheme.colorScheme.onTertiaryContainer,
+        navController = navController
+    ) {
+        CampoTexto(label = stringResource(R.string.titulo_evento), value = viewModel.tituloEvento, onChange = { viewModel.tituloEvento = it })
+        Spacer(Modifier.height(16.dp))
+        CampoTexto(label = stringResource(R.string.desc_evento), value = viewModel.descEvento, onChange = { viewModel.descEvento = it }, modifier = Modifier.height(110.dp), singleLine = false)
+        Spacer(Modifier.height(16.dp))
 
-            Spacer(modifier = Modifier.size(16.dp))
-
-            TextField(
-                value = viewModel.descEvento,
-                onValueChange = { viewModel.descEvento = it },
-                label = { Text(stringResource(R.string.desc_evento)) }
-            )
-
-            Spacer(modifier = Modifier.size(16.dp))
-
-            // Selector de Categoría (Exposed Dropdown Menu)
-            ExposedDropdownMenuBox(
-                expanded = expanded,
-                onExpandedChange = { expanded = !expanded }
-            ) {
-                OutlinedTextField(
-                    value = categoriaSeleccionada,
-                    onValueChange = {},
-                    readOnly = true,
-                    label = { Text("Categoría") },
-                    trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded) },
-                    modifier = Modifier.menuAnchor()
+        Text("Categoría", style = MaterialTheme.typography.labelLarge, fontWeight = FontWeight.SemiBold)
+        Spacer(Modifier.height(8.dp))
+        ExposedDropdownMenuBox(expanded = expanded, onExpandedChange = { expanded = !expanded }, modifier = Modifier.fillMaxWidth()) {
+            OutlinedTextField(
+                value = categoriaSeleccionada,
+                onValueChange = {},
+                readOnly = true,
+                label = { Text("Seleccionar categoría") },
+                trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded) },
+                // Cambio: Uso de menuAnchor con MenuAnchorType.PrimaryNotEditable
+                modifier = Modifier.menuAnchor(MenuAnchorType.PrimaryNotEditable).fillMaxWidth(),
+                shape = RoundedCornerShape(14.dp),
+                colors = OutlinedTextFieldDefaults.colors(
+                    focusedBorderColor = MaterialTheme.colorScheme.primary,
+                    unfocusedBorderColor = MaterialTheme.colorScheme.outlineVariant
                 )
-
-                ExposedDropdownMenu(
-                    expanded = expanded,
-                    onDismissRequest = { expanded = false }
-                ) {
-                    if (viewModel.categorias.isEmpty()) {
-                        DropdownMenuItem(
-                            text = { Text("General") },
-                            onClick = {
-                                categoriaSeleccionada = "General"
-                                expanded = false
-                            }
-                        )
-                    } else {
-                        viewModel.categorias.forEach { categoria ->
-                            DropdownMenuItem(
-                                text = { Text(categoria.nombre) },
-                                onClick = {
-                                    categoriaSeleccionada = categoria.nombre
-                                    expanded = false
-                                }
-                            )
-                        }
-                    }
+            )
+            ExposedDropdownMenu(expanded = expanded, onDismissRequest = { expanded = false }) {
+                val opciones = if (viewModel.categorias.isEmpty()) listOf("General") else viewModel.categorias.map { it.nombre }
+                opciones.forEach { nombre ->
+                    DropdownMenuItem(text = { Text(nombre) }, onClick = { categoriaSeleccionada = nombre; expanded = false })
                 }
-            }
-
-            if (viewModel.errorEvento.isNotEmpty()) {
-                Text(
-                    text = viewModel.errorEvento,
-                    color = MaterialTheme.colorScheme.error,
-                    modifier = Modifier.padding(top = 4.dp)
-                )
-            }
-
-            Spacer(modifier = Modifier.size(22.dp))
-
-            Button(onClick = {
-                if (viewModel.addEvento(categoriaSeleccionada)) {
-                    navController.popBackStack()
-                }
-            }) {
-                Text(stringResource(R.string.btn_guardar))
             }
         }
+
+        if (viewModel.errorEvento.isNotEmpty()) {
+            Spacer(Modifier.height(4.dp))
+            Text(viewModel.errorEvento, color = MaterialTheme.colorScheme.error, style = MaterialTheme.typography.labelSmall)
+        }
+        BotonesFormulario(
+            onGuardar = { if (viewModel.addEvento(categoriaSeleccionada)) navController.popBackStack() },
+            onCancelar = { navController.popBackStack() },
+            textoGuardar = stringResource(R.string.btn_guardar)
+        )
     }
 }
